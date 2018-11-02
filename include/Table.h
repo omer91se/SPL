@@ -1,3 +1,8 @@
+/*
+*Authors: Anat Bar-Sinai, Omer Segal.
+*Last Update: 2.11.2018
+*/
+
 #ifndef TABLE_H_
 #define TABLE_H_
 
