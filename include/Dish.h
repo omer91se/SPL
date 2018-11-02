@@ -1,3 +1,7 @@
+/*
+*Authors: Anat Bar-Sinai, Omer Segal.
+*Last Update: 2.11.2018
+*/
 #ifndef DISH_H_
 #define DISH_H_
 

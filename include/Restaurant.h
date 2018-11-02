@@ -1,3 +1,7 @@
+/*
+*Authors: Anat Bar-Sinai, Omer Segal.
+*Last Update: 2.11.2018
+*/
 #ifndef RESTAURANT_H_
 #define RESTAURANT_H_
 
