@@ -18,7 +18,7 @@ public:
     int getId() const;
 private:
     const std::string name;
-    const int id
+    const int id;
 };
 
 
@@ -51,7 +51,7 @@ private:
 
 class AlchoholicCustomer : public Customer {
 public:
-	AlchoholicCustomer(std::string name, int id)
+	AlchoholicCustomer(std::string name, int id);
     std::vector<int> order(const std::vector<Dish> &menu);
     std::string toString() const;
 private:
