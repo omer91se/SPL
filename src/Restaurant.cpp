@@ -11,7 +11,7 @@ using namespace std;
 //Empty constructor.
 Restaurant(): open(false), tables(new vector<Table*>), menu(new vector<Dish>), actionsLog(new vector<BaseAction*>){}
 
-/*Constructor
+/*Constructor ANAT
 *Input: Path to the config file.
 */
 Restaurant(const std::string &configFilePath){
