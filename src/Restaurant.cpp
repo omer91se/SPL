@@ -13,7 +13,7 @@ DishType str_to_DishTp(string str);
 //Empty constructor.
 Restaurant::Restaurant(): open(false), tables(), menu(), actionsLog(){}
 
-//TODO Init actionlogs.
+//TODO Init actionlogs.OMER
 /*Constructor.
 *Input: Path to the config file.
 */
