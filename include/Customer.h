@@ -1,6 +1,6 @@
-/*
-*Authors: Anat Bar-Sinai, Omer Segal.
-*Last Update: 2.11.2018
+/**
+*@Authors: Anat Bar-Sinai, Omer Segal.
+*@version: Last Update: 2.11.2018
 */
 #ifndef CUSTOMER_H_
 #define CUSTOMER_H_

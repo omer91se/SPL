@@ -1,6 +1,6 @@
-/*
-*Authors: Anat Bar-Sinai, Omer Segal.
-*Last Update: 7.11.2018
+/**
+*@Authors: Anat Bar-Sinai, Omer Segal.
+*@version: Last Update: 8.11.2018
 */
 
 #include "../include/Restaurant.h"
@@ -8,16 +8,16 @@
 
 using namespace std;
 
-DishType str_to_DishTp(string str);
 
 //Empty constructor.
 Restaurant::Restaurant(): open(false), tables(), menu(), actionsLog(){}
 
-//TODO Init actionlogs.
+
 /*Constructor.
 *Input: Path to the config file.
 */
 Restaurant::Restaurant(const string &configFilePath): open(false){
+
     ifstream config_file(configFilePath);
     string line;
 
@@ -26,10 +26,11 @@ Restaurant::Restaurant(const string &configFilePath): open(false){
 
         while (getline(config_file, line)) {
             if (line.size() > 0 && line[0] != '#') {
+
                 //Assign number of tables
                 if (counter == 1) {
                     int num_of_t = stoi(line, nullptr);
-                    tables = new vector<Table *>(num_of_t);
+                    tables = vector<Table *>(num_of_t);
                 }
 
                 //Capacity of tables
@@ -47,6 +48,8 @@ Restaurant::Restaurant(const string &configFilePath): open(false){
                         line.erase(0, pos + 1);
                     }
                 }
+
+                //Initialize menu
                 if (counter >= 3) {
                     int dish_id = 0;
                     int price = 0;
@@ -68,18 +71,42 @@ Restaurant::Restaurant(const string &configFilePath): open(false){
                     dish_id++;
                     this->menu.push_back(dish);
 
-
                 }
-
                 counter++;
             }
         }
-
-
     }
     else cout << "Unable to open file";
 
     config_file.close();
+}
+
+/**
+ * Destructor
+ */
+Restaurant::~Restaurant(){
+   clean();
+}
+
+/**
+ *
+ * @param other
+ * @return this
+ */
+Restaurant& Restaurant::operator=(const Restaurant& other){
+    if(this != &other){
+        clean();
+        copy(other);
+    }
+    return *this;
+}
+
+//TODO: check if open == true or same as other.open.
+Restaurant::Restaurant(const Restaurant& other): open(false){
+    this->tables = vector<Table*>(other.tables.size());
+    this->actionsLog = vector<BaseAction*>(other.actionsLog.size());
+    this->menu = vector<Dish>(other.menu.size());
+    copy(other);
 }
 
 void Restaurant::start() {
@@ -115,12 +142,12 @@ std::vector<Dish>& Restaurant::getMenu() {
  * Input: dish type in string.
  * Output: DishType.
  */
-DishType str_to_DishTp(string str) {
+DishType Restaurant::str_to_DishTp(string str) {
     DishType dish_type;
     if(str == "VEG")
         dish_type = VEG;
     else if(str == "SPC")
-        dish_type = BVG;
+        dish_type = SPC;
     else if(str == "BVG")
         dish_type = BVG;
     else
@@ -129,9 +156,30 @@ DishType str_to_DishTp(string str) {
 
 }
 
-
-
-
-
-
-
+/**
+ * Deletes all the memory that has been allocated.
+ */
+void Restaurant::clean(){
+    for (vector<Table *>::iterator table_it = tables.begin(); table_it != tables.end(); ++table_it){
+        Table* table = *table_it;
+        tables.erase(table_it);
+        delete(table);
+    }
+    for (vector<BaseAction*>::iterator action_it = actionsLog.begin(); action_it != actionsLog.end(); ++action_it){
+        BaseAction* BA = *action_it;
+        actionsLog.erase(action_it);
+        delete(BA);
+    }
+}
+/**
+ * Deep copy.
+ * @param other.
+ */
+void Restaurant::copy(const Restaurant& other) {
+    for (auto table_it = other.tables.begin(); table_it != other.tables.end(); ++table_it) {
+        this->tables.push_back(*table_it);
+    }
+    for (auto actions_it = other.actionsLog.begin(); actions_it != other.actionsLog.end(); ++actions_it) {
+        this->actionsLog.push_back(*actions_it);
+    }
+}

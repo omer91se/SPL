@@ -39,4 +39,4 @@ bin/Table.o: src/Table.cpp
 
 #Clean the build directory
 clean:
-	rm -f bin/*
+	#rm -f bin/*
