@@ -4,8 +4,8 @@
 */
 
 #include "../include/Restaurant.h"
+#include "../include/Customer.h"
 #include <fstream>
-
 using namespace std;
 
 
@@ -101,29 +101,128 @@ Restaurant& Restaurant::operator=(const Restaurant& other){
     return *this;
 }
 
-//TODO: check if open == true or same as other.open.
-Restaurant::Restaurant(const Restaurant& other): open(false){
-    this->tables = vector<Table*>(other.tables.size());
-    this->actionsLog = vector<BaseAction*>(other.actionsLog.size());
-    this->menu = vector<Dish>(other.menu.size());
+Restaurant::Restaurant(const Restaurant& other):open(other.open),
+                                                tables(vector<Table*>(other.tables.size())),
+                                                actionsLog(vector<BaseAction*>(other.actionsLog.size())),
+                                                menu(this->menu = vector<Dish>(other.menu.size()))
+{
     copy(other);
 }
-
+//TODO Add actions to actionLog.
 void Restaurant::start() {
     cout << "Restaurant is now open!" << endl;
     this->open = true;
+    int cust_count = 0;
+    string input = "";
+    string action = "";
+    string args = "";
+
+    while (action != "closeall"){
+        cin >> input;
+        action = input.substr(0,input.find(' '));
+        args = input.substr(input.find(' ')+1,input.size());
+
+            if (action == "open"){
+                int id = stoi(input.substr(0,input.find(' ')),nullptr);
+                input = input.substr(input.find(' ')+1,input.size());
+                vector<Customer*> customers;
+                string name;
+                string type;
+                while(input != ""){
+                    name = args.substr(0,input.find(','));
+                    type = args.substr(input.find(',')+1,input.find(' '));
+
+                        string str_status;
+                        if (type == "veg"){
+                            Customer *cust = new VegetarianCustomer(name, cust_count);
+                            cust_count++;
+                            customers.push_back(cust);
+                        }
+
+                        if (type == "chp"){
+                            Customer *cust = new CheapCustomer(name, cust_count);
+                            cust_count++;
+                            customers.push_back(cust);
+                        }
+                        if (type == "spc"){
+                            Customer *cust = new SpicyCustomer(name, cust_count);
+                            cust_count++;
+                            customers.push_back(cust);}
+
+                        if (type == "alc"){
+                            Customer *cust = new AlchoholicCustomer(name, cust_count);
+                            cust_count++;
+                            customers.push_back(cust);
+                        }
+                        args = args.substr(input.find(' ')+1,input.size());
+                }
+                OpenTable open_table(id,customers);
+                open_table.act(*this);
+            }
+
+            if (action == "order"){
+                int id = stoi(args);
+                Order order(id);
+                order.act(*this);
+            }
+
+            if (action == "move"){
+                int src = stoi(args.substr(0,args.find(' ')));
+                args = args.substr(0,args.find(' ')+1);
+                int dst = stoi(args.substr(0,args.find(' ')));
+                args = args.substr(0,args.find(' ')+1);
+                int id = stoi(args.substr(0,args.find(' ')));
+
+                MoveCustomer move(src,dst,id);
+                move.act(*this);
+            }
+             if (action == "close"){
+                 int id = stoi(args);
+                 Close close(id);
+                 close.act(*this);
+             }
+
+            if (action == "closeall"){
+                CloseAll close;
+                close.act(*this);
+            }
+            if (action == "menu"){
+                PrintMenu print;
+                print.act(*this);
+            }
+            if (action == "status"){
+                int id = stoi(args);
+                PrintTableStatus print(id);
+                print.act(*this);
+            }
+            if (action == "log"){
+                PrintActionsLog log;
+                log.act(*this);
+            }
+
+            if (action == "backup"){
+                BackupRestaurant backup;
+                backup.act(*this);
+
+            }
+            if (action == "restore"){
+                RestoreResturant restore;
+                restore.act(*this);
+            }
+
+
+    }
 }
 
 int Restaurant::getNumOfTables() const {
     return this->tables.size();
 }
 
-Table *Restaurant::getTable(int ind) {
+Table *Restaurant::getTable(int ind){
     if (ind < getNumOfTables() && tables[ind] != nullptr)
         return tables[ind];
 
     else {
-        cout << "A table with that index does not exist." << endl;
         return nullptr;
     }
 
@@ -133,8 +232,8 @@ const std::vector<BaseAction *>& Restaurant::getActionsLog() const {
     return this->actionsLog;
 }
 
-std::vector<Dish>& Restaurant::getMenu() {
-    return this->menu;
+std::vector<Dish>& Restaurant::getMenu() const {
+    return this->getMenu();
 }
 
 /*
@@ -175,11 +274,17 @@ void Restaurant::clean(){
  * Deep copy.
  * @param other.
  */
-void Restaurant::copy(const Restaurant& other) {
-    for (auto table_it = other.tables.begin(); table_it != other.tables.end(); ++table_it) {
+void const Restaurant::copy(const Restaurant& other)  {
+    for (vector<Table*>::const_iterator table_it = other.tables.begin(); table_it != other.tables.end(); ++table_it) {
         this->tables.push_back(*table_it);
     }
-    for (auto actions_it = other.actionsLog.begin(); actions_it != other.actionsLog.end(); ++actions_it) {
+    for (vector<BaseAction*>::const_iterator actions_it = other.getActionsLog().begin(); actions_it != other.actionsLog.end(); ++actions_it) {
         this->actionsLog.push_back(*actions_it);
     }
+
+    for (vector<Dish>::const_iterator dish_it = other.getMenu().begin(); dish_it != other.getMenu().end(); ++dish_it) {
+        this->menu.push_back(*dish_it);
+    }
+
+    this->open = other.open;
 }

@@ -23,7 +23,7 @@ public:
     int getNumOfTables() const;
     Table* getTable(int ind);
 	const std::vector<BaseAction*>& getActionsLog() const; // Return a reference to the history of actions
-    std::vector<Dish>& getMenu();
+    std::vector<Dish>& getMenu() const;
 
 
 private:
@@ -31,9 +31,10 @@ private:
     std::vector<Table*> tables;
     std::vector<Dish> menu;
     std::vector<BaseAction*> actionsLog;
+
     void clean();
 	DishType str_to_DishTp(std::string str);
-	void copy(const Restaurant& other);
+	void const copy(const Restaurant& other) ;
 };
 
 #endif

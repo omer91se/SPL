@@ -11,7 +11,7 @@ template <typename T>
 typename vector<T*>::iterator find_it_in_vector (int id, vector<T*> list);
 
 
-Table::Table(int t_capacity):capacity(t_capacity), open(false)  {}
+Table::Table(int t_capacity):capacity(t_capacity), open(false), customersList(vector<Customer*>(t_capacity))  {}
 int Table::getCapacity() const{
     return this->capacity;
 }
@@ -103,6 +103,11 @@ void Table::openTable() {
  * Sets open to false.
  */
 void Table::closeTable() {
+    for (vector<Customer *>::iterator cust = customersList.begin(); cust != customersList.end(); ++cust){
+        delete((*cust));
+    }
+    customersList = vector<Customer*>(getCapacity());
+    orderList = vector<OrderPair>();
     this->open = false;
 }
 

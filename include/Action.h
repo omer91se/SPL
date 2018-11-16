@@ -1,6 +1,6 @@
 /**
 *@Authors: Anat Bar-Sinai, Omer Segal.
-*@version: Last Update: 2.11.2018
+*@version: Last Update: 15.11.2018
 */
 
 #ifndef ACTION_H_
@@ -9,6 +9,8 @@
 #include <string>
 #include <iostream>
 #include "Customer.h"
+#include "Table.h"
+
 
 enum ActionStatus{
     PENDING, COMPLETED, ERROR
@@ -17,6 +19,7 @@ enum ActionStatus{
 //Forward declaration
 class Restaurant;
 
+std::string status_to_string(ActionStatus stat);
 class BaseAction{
 public:
     BaseAction();
@@ -39,8 +42,8 @@ public:
     void act(Restaurant &restaurant);
     std::string toString() const;
 private:
-	const int tableId;
-	const std::vector<Customer *> customers;
+    const int tableId;
+    std::vector<Customer *> customers;
 };
 
 

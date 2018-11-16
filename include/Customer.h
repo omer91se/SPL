@@ -19,6 +19,7 @@ public:
 private:
     const std::string name;
     const int id;
+
 };
 
 
@@ -28,6 +29,7 @@ public:
     std::vector<int> order(const std::vector<Dish> &menu);
     std::string toString() const;
 private:
+	std::string type;
 };
 
 
@@ -37,6 +39,7 @@ public:
     std::vector<int> order(const std::vector<Dish> &menu);
     std::string toString() const;
 private:
+	std::string type;
 };
 
 
@@ -46,6 +49,7 @@ public:
     std::vector<int> order(const std::vector<Dish> &menu);
     std::string toString() const;
 private:
+	std::string type;
 	bool firstOrder;
 };
 
@@ -56,6 +60,7 @@ public:
     std::vector<int> order(const std::vector<Dish> &menu);
     std::string toString() const;
 private:
+	std::string type;
 	int last_price;
 	int last_id;
 };

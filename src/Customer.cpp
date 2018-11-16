@@ -24,9 +24,7 @@ string Customer::getName() const {
 }
 
 //VEG
-VegetarianCustomer::VegetarianCustomer(string name, int id) : Customer(name, id) {
-
-}
+VegetarianCustomer::VegetarianCustomer(string name, int id) : Customer(name, id), type("veg") {}
 
 /**
  * Orders for the vegetarian customer (lowest id VEG dish and most expencive BVG).
@@ -54,7 +52,7 @@ vector<int> VegetarianCustomer::order(const vector<Dish> &menu) {
 }
 //TODO
 string VegetarianCustomer::toString() const {
-    return __cxx11::string();
+    return type;
 }
 
 
@@ -62,7 +60,7 @@ string VegetarianCustomer::toString() const {
 
 
 //CHP
-CheapCustomer::CheapCustomer(string name, int id) : Customer(name, id) {
+CheapCustomer::CheapCustomer(string name, int id) : Customer(name, id), type("chp") {
 
 }
 
@@ -89,7 +87,7 @@ vector<int> CheapCustomer::order(const vector<Dish> &menu) {
 
 //TODO
 string CheapCustomer::toString() const {
-    return __cxx11::string();
+    return type;
 }
 
 
@@ -97,7 +95,7 @@ string CheapCustomer::toString() const {
 
 
 //SPC
-SpicyCustomer::SpicyCustomer(string name, int id) : Customer(name, id), firstOrder(true)
+SpicyCustomer::SpicyCustomer(string name, int id) : Customer(name, id), firstOrder(true), type("spc")
 {}
 
 /**
@@ -134,7 +132,7 @@ vector<int> SpicyCustomer::order(const vector<Dish> &menu) {
 
 //TODO
 string SpicyCustomer::toString() const {
-    return __cxx11::string();
+    return type;
 }
 
 
@@ -142,7 +140,7 @@ string SpicyCustomer::toString() const {
 
 
 //ALC
-AlchoholicCustomer::AlchoholicCustomer(string name, int id) : Customer(name, id), last_price(0), last_id(-1) {
+AlchoholicCustomer::AlchoholicCustomer(string name, int id) : Customer(name, id), last_price(0), last_id(-1), type("alc") {
 
 }
 
@@ -177,5 +175,5 @@ vector<int> AlchoholicCustomer::order(const vector<Dish> &menu) {
 
 //TODO
 string AlchoholicCustomer::toString() const {
-    return __cxx11::string();
+    return type;
 }

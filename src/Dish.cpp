@@ -4,7 +4,7 @@
 */
 
 #include "../include/Dish.h"
-#include "Dish.h"
+
 
 /**
  * Dish constructor.
@@ -43,7 +43,7 @@ int Dish::getPrice() const {
 
 /**
  * Dish type getter.
- * @return type bt DishType.
+ * @return type by DishType.
  */
 DishType Dish::getType() const {
     return this->type;
