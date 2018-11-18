@@ -16,14 +16,19 @@ class Restaurant{
 public:
 	Restaurant();
     Restaurant(const std::string &configFilePath);
-	Restaurant(const Restaurant& other);
-	~Restaurant();
-	Restaurant& operator=(const Restaurant& other);
+
     void start();
     int getNumOfTables() const;
     Table* getTable(int ind);
 	const std::vector<BaseAction*>& getActionsLog() const; // Return a reference to the history of actions
     std::vector<Dish>& getMenu() const;
+
+    //Rule of five
+    Restaurant(const Restaurant& other);
+    Restaurant& operator=(const Restaurant& other);
+    Restaurant& operator=(Restaurant &&other);
+    Restaurant(Restaurant &&other);
+    ~Restaurant();
 
 
 private:
@@ -33,8 +38,10 @@ private:
     std::vector<BaseAction*> actionsLog;
 
     void clean();
+    void steal(Restaurant &other);
+	void copy(const Restaurant& other) ;
 	DishType str_to_DishTp(std::string str);
-	void const copy(const Restaurant& other) ;
+
 };
 
 #endif

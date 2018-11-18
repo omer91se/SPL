@@ -1,6 +1,6 @@
 /**
 *@Authors: Anat Bar-Sinai, Omer Segal.
-*@version: Last Update: 2.11.2018
+*@version: Last Update: 18.11.2018
 */
 
 #ifndef TABLE_H_
@@ -15,6 +15,12 @@ typedef std::pair<int, Dish> OrderPair;
 class Table{
 public:
     Table(int t_capacity);
+    Table(const Table &other);
+    Table(Table &&other);
+    Table& operator=(const Table &other);
+    Table& operator=(Table &&other);
+    ~Table();
+
     int getCapacity() const;
     void addCustomer(Customer* customer);
     void removeCustomer(int id);
@@ -27,10 +33,16 @@ public:
     int getBill();
     bool isOpen();
 private:
+
     int capacity;
     bool open;
     std::vector<Customer*> customersList;
     std::vector<OrderPair> orderList; //A list of pairs for each order in a table - (customer_id, Dish)
+
+    void clean();
+    void copy(const Table &other);
+    void steal(Table &other);
+    void removeOrders(int id);
 };
 
 

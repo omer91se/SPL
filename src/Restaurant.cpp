@@ -1,6 +1,6 @@
 /**
 *@Authors: Anat Bar-Sinai, Omer Segal.
-*@version: Last Update: 8.11.2018
+*@version: Last Update: 18.11.2018
 */
 
 #include "../include/Restaurant.h"
@@ -81,11 +81,12 @@ Restaurant::Restaurant(const string &configFilePath): open(false){
     config_file.close();
 }
 
-/**
- * Destructor
- */
-Restaurant::~Restaurant(){
-   clean();
+Restaurant &Restaurant::operator=(Restaurant &&other) {
+    if(this != &other){
+        clean();
+        steal(other);
+    }
+    return *this;
 }
 
 /**
@@ -101,13 +102,26 @@ Restaurant& Restaurant::operator=(const Restaurant& other){
     return *this;
 }
 
-Restaurant::Restaurant(const Restaurant& other):open(other.open),
-                                                tables(vector<Table*>(other.tables.size())),
+Restaurant::Restaurant(const Restaurant& other):tables(vector<Table*>(other.tables.size())),
                                                 actionsLog(vector<BaseAction*>(other.actionsLog.size())),
-                                                menu(this->menu = vector<Dish>(other.menu.size()))
+                                                menu(vector<Dish>())
+                                                //other.menu.size()
 {
     copy(other);
 }
+
+Restaurant::Restaurant(Restaurant &&other): menu(other.menu) {
+    steal(other);
+}
+
+/**
+ * Destructor
+ */
+Restaurant::~Restaurant(){
+   clean();
+    cout<< "Restaurant Dest"<<endl;
+}
+
 //TODO Add actions to actionLog.
 void Restaurant::start() {
     cout << "Restaurant is now open!" << endl;
@@ -156,14 +170,16 @@ void Restaurant::start() {
                         }
                         args = args.substr(input.find(' ')+1,input.size());
                 }
-                OpenTable open_table(id,customers);
-                open_table.act(*this);
+                BaseAction *open_table = new OpenTable(id,customers);
+                open_table->act(*this);
+                this->actionsLog.push_back(open_table);
             }
 
             if (action == "order"){
                 int id = stoi(args);
-                Order order(id);
-                order.act(*this);
+                BaseAction *order = new Order(id);
+                order->act(*this);
+                this->actionsLog.push_back(order);
             }
 
             if (action == "move"){
@@ -173,13 +189,15 @@ void Restaurant::start() {
                 args = args.substr(0,args.find(' ')+1);
                 int id = stoi(args.substr(0,args.find(' ')));
 
-                MoveCustomer move(src,dst,id);
-                move.act(*this);
+                BaseAction *move = new MoveCustomer(src,dst,id);
+                move->act(*this);
+                this->actionsLog.push_back(move);
             }
              if (action == "close"){
                  int id = stoi(args);
-                 Close close(id);
-                 close.act(*this);
+                 BaseAction *close = new Close(id);
+                 close->act(*this);
+                 this->actionsLog.push_back(close);
              }
 
             if (action == "closeall"){
@@ -187,27 +205,32 @@ void Restaurant::start() {
                 close.act(*this);
             }
             if (action == "menu"){
-                PrintMenu print;
-                print.act(*this);
+                BaseAction *print = new PrintMenu;
+                print->act(*this);
+                this->actionsLog.push_back(print);
             }
             if (action == "status"){
                 int id = stoi(args);
-                PrintTableStatus print(id);
-                print.act(*this);
+                BaseAction *print = new PrintTableStatus(id);
+                print->act(*this);
+                this->actionsLog.push_back(print);
             }
             if (action == "log"){
-                PrintActionsLog log;
-                log.act(*this);
+                BaseAction *log = new PrintActionsLog;
+                log->act(*this);
+                this->actionsLog.push_back(log);
             }
 
             if (action == "backup"){
-                BackupRestaurant backup;
-                backup.act(*this);
+                BaseAction *backup = new BackupRestaurant;
+                backup->act(*this);
+                this->actionsLog.push_back(backup);
 
             }
             if (action == "restore"){
-                RestoreResturant restore;
-                restore.act(*this);
+                BaseAction *restore = new RestoreResturant;
+                restore->act(*this);
+                this->actionsLog.push_back(restore);
             }
 
 
@@ -274,12 +297,13 @@ void Restaurant::clean(){
  * Deep copy.
  * @param other.
  */
-void const Restaurant::copy(const Restaurant& other)  {
+void Restaurant::copy(const Restaurant& other)  {
     for (vector<Table*>::const_iterator table_it = other.tables.begin(); table_it != other.tables.end(); ++table_it) {
-        this->tables.push_back(*table_it);
+        Table *table = new Table(*(*table_it));
+        this->tables.push_back(table);
     }
     for (vector<BaseAction*>::const_iterator actions_it = other.getActionsLog().begin(); actions_it != other.actionsLog.end(); ++actions_it) {
-        this->actionsLog.push_back(*actions_it);
+        this->actionsLog.push_back((*actions_it)->clone());
     }
 
     for (vector<Dish>::const_iterator dish_it = other.getMenu().begin(); dish_it != other.getMenu().end(); ++dish_it) {
@@ -287,4 +311,15 @@ void const Restaurant::copy(const Restaurant& other)  {
     }
 
     this->open = other.open;
+}
+
+void Restaurant::steal(Restaurant &other) {
+    this->open = other.open;
+
+    for (vector<Dish>::const_iterator dish_it = other.getMenu().begin(); dish_it != other.getMenu().end(); ++dish_it)
+        this->menu.push_back(*dish_it);
+
+    this->actionsLog = other.actionsLog;
+    this->tables = other.tables;
+
 }

@@ -16,6 +16,37 @@ int Table::getCapacity() const{
     return this->capacity;
 }
 
+Table::Table(const Table &other): orderList(vector<OrderPair>(other.capacity)), customersList(vector<Customer*>(other.customersList.size())){
+    copy(other);
+}
+
+Table::Table(Table &&other) {
+    steal(other);
+}
+
+Table &Table::operator=(const Table &other) {
+    if(this != &other){
+        clean();
+        copy(other);
+    }
+
+    return *this;
+}
+
+Table &Table::operator=(Table &&other) {
+    if(this != &other){
+        clean();
+        steal(other);
+    }
+
+    return *this;
+}
+
+Table::~Table() {
+    clean();
+    cout<< "Table Dest"<<endl;
+}
+
 //TODO check if input checks are needed.
 //TODO for all the functions.
 
@@ -37,6 +68,8 @@ void Table::addCustomer(Customer *customer) {
 void Table::removeCustomer(int id) {
     vector<Customer*>::iterator customer_it = find_it_in_vector(id, this->customersList);
     this->customersList.erase(customer_it);
+    removeOrders(id);
+
     //TODO check if customer's destructor is called.
 }
 
@@ -144,4 +177,40 @@ vector<Customer*>::iterator find_customer (int id, vector<Customer*> customers_l
         if ((*it)->getId() == id)
             return it;
     }
+}
+
+void Table::clean() {
+    for (vector<Customer *>::iterator cust_it = this->getCustomers().begin(); cust_it != this->getCustomers().end(); ++cust_it){
+        Customer* cust= *cust_it;
+        customersList.erase(cust_it);
+        delete(cust);
+    }
+}
+
+void Table::copy(const Table &other) {
+    for (vector<Customer*>::const_iterator cust_it = other.customersList.begin(); cust_it!= other.customersList.end(); ++cust_it) {
+        this->customersList.push_back((*cust_it)->clone());
+    }
+    for (vector<OrderPair>::const_iterator pair = other.orderList.begin(); pair != other.orderList.end(); ++pair) {
+        this->orderList.push_back(*pair);
+    }
+    this->capacity = other.capacity;
+    this->open = other.open;
+}
+
+void Table::steal(Table &other) {
+    this->open = other.open;
+    this->capacity = other.capacity;
+    this->customersList = other.customersList;
+    this->orderList = other.orderList;
+}
+
+void Table::removeOrders(int id) {
+    std::vector<OrderPair> temp;
+    for (auto &i : orderList)
+        if(i.first != id)
+            temp.push_back(i);
+    orderList.clear();
+    for (const auto &i : temp)
+        orderList.push_back(i);
 }

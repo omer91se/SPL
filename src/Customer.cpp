@@ -26,6 +26,10 @@ string Customer::getName() const {
 //VEG
 VegetarianCustomer::VegetarianCustomer(string name, int id) : Customer(name, id), type("veg") {}
 
+VegetarianCustomer *VegetarianCustomer::clone() const {
+    return new VegetarianCustomer(*this);
+}
+
 /**
  * Orders for the vegetarian customer (lowest id VEG dish and most expencive BVG).
  *
@@ -64,6 +68,9 @@ CheapCustomer::CheapCustomer(string name, int id) : Customer(name, id), type("ch
 
 }
 
+CheapCustomer *CheapCustomer::clone() const {
+    return new CheapCustomer(*this);
+}
 /**
  * Orders for the cheap customer (lowest price dish).
  *
@@ -97,6 +104,10 @@ string CheapCustomer::toString() const {
 //SPC
 SpicyCustomer::SpicyCustomer(string name, int id) : Customer(name, id), firstOrder(true), type("spc")
 {}
+
+SpicyCustomer *SpicyCustomer::clone() const {
+    return new SpicyCustomer(*this);
+}
 
 /**
  * Orders for the spicy customer (If first order then most expensive SPC dish, else cheapest BVG).
@@ -142,6 +153,10 @@ string SpicyCustomer::toString() const {
 //ALC
 AlchoholicCustomer::AlchoholicCustomer(string name, int id) : Customer(name, id), last_price(0), last_id(-1), type("alc") {
 
+}
+
+AlchoholicCustomer *AlchoholicCustomer::clone() const {
+    return new AlchoholicCustomer(*this);
 }
 
 /**
